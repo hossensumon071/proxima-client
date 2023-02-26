@@ -1,44 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import ProjectDetails from '../components/ProjectDetails';
-import ProjectForm from '../components/ProjectForm';
+import { useEffect } from "react";
+import ProjectDetails from "../components/ProjectDetails";
+import ProjectForm from "../components/ProjectForm";
+import { useProjectsContext } from "../hooks/useProjectsContext";
 
 const Home = () => {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { projects, dispatch } = useProjectsContext();
 
   useEffect(() => {
-    const getProjects = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('http://localhost:5000/api/projects');
-        if(!res.ok) throw new Error("Something went wrong");
-        const data = await res.json();
-        setProjects(data);
-        console.log(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    }
+    const getAllProjects = async () => {
+      const res = await fetch("http://localhost:5000/api/projects");
+      const json = await res.json();
 
-    getProjects()
-  }, [])
+      if (res.ok) {
+        dispatch({ type: "SET_PROJECTS", payload: json });
+      }
+    };
+
+    getAllProjects();
+  }, [dispatch]);
 
   return (
-    <div className='home container mx-auto py-20 grid grid-cols-3 gap-10'>
+    <div className="home container mx-auto py-20 grid grid-cols-3 gap-10">
       <div className="left col-span-2">
-        <h2 className="text-4xl font-medium text-sky-400 mb-10">All Projects</h2>
+        <h2 className="text-4xl font-medium text-sky-400 mb-10">
+          All Projects
+        </h2>
         <div className="projects-wrapper flex gap-10 flex-wrap">
-          {
-            projects && projects.map(project => (
-              <ProjectDetails key={project._id} project={project}/>
-            ))
-          }
+          {projects &&
+            projects.map((project) => (
+              <ProjectDetails key={project._id} project={project} />
+            ))}
         </div>
       </div>
-      <ProjectForm/>
+      <ProjectForm />
     </div>
   );
 };
