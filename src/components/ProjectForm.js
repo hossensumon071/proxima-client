@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useProjectsContext } from '../hooks/useProjectsContext';
+import React, { useState } from "react";
+import { useProjectsContext } from "../hooks/useProjectsContext";
 
 const ProjectForm = () => {
   const [title, setTitle] = useState("");
@@ -9,17 +9,18 @@ const ProjectForm = () => {
   const [manager, setManager] = useState("");
   const [dev, setDev] = useState("");
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
 
-  const { dispatch } = useProjectsContext()
+  const { dispatch } = useProjectsContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Data
-    const projectObj = {title, tech, budget, duration, manager, dev}
+    const projectObj = { title, tech, budget, duration, manager, dev };
 
     // post req
-    const res = await fetch('http://localhost:5000/api/projects', {
+    const res = await fetch("http://localhost:5000/api/projects", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -29,11 +30,12 @@ const ProjectForm = () => {
     const json = await res.json();
 
     // res.ok, set error
-    if(!res.ok) {
-      setError(json.error)
+    if (!res.ok) {
+      setError(json.error);
+      setEmptyFields(json.emptyFields);
     }
     // res.ok, reset
-    if(res.ok) {
+    if (res.ok) {
       setTitle("");
       setTech("");
       setBudget("");
@@ -41,42 +43,145 @@ const ProjectForm = () => {
       setManager("");
       setDev("");
       setError("");
-
-      dispatch({type: 'CREATE_PROJECT', payload: json})
+      emptyFields([]);
+      dispatch({ type: "CREATE_PROJECT", payload: json });
     }
-  }
+  };
   return (
     <form onSubmit={handleSubmit} className="project-form flex flex-col gap-5">
       <h2 className="text-4xl font-medium text-sky-400 mb-10">
         Add a new project
       </h2>
       <div className="form-control flex flex-col gap-2">
-        <label htmlFor="title" className="cursor-pointer hover:text-sky-400 duration-300">Project Title</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" placeholder="e.g. e-commerce website" id="title" className="bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300"/>
+        <label
+          htmlFor="title"
+          className="cursor-pointer hover:text-sky-400 duration-300"
+        >
+          Project Title
+        </label>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          type="text"
+          placeholder="e.g. e-commerce website"
+          id="title"
+          className={`bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300 ${
+            emptyFields.includes("title")
+              ? "border-rose-500"
+              : "border-slate-500"
+          }`}
+        />
       </div>
       <div className="form-control flex flex-col gap-2">
-        <label htmlFor="tech" className="cursor-pointer hover:text-sky-400 duration-300">Technologies</label>
-        <input value={tech} onChange={(e) => setTech(e.target.value)} type="text" placeholder="e.g. React, Redux, NodeJS etc." id="tech" className="bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300"/>
+        <label
+          htmlFor="tech"
+          className="cursor-pointer hover:text-sky-400 duration-300"
+        >
+          Technologies
+        </label>
+        <input
+          value={tech}
+          onChange={(e) => setTech(e.target.value)}
+          type="text"
+          placeholder="e.g. React, Redux, NodeJS etc."
+          id="tech"
+          className={`bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300 ${
+            emptyFields.includes("tech")
+              ? "border-rose-500"
+              : "border-slate-500"
+          }`}
+        />
       </div>
       <div className="form-control flex flex-col gap-2">
-        <label htmlFor="budget" className="cursor-pointer hover:text-sky-400 duration-300">Budget (in USD)</label>
-        <input value={budget} onChange={(e) => setBudget(e.target.value)} type="number" placeholder="e.g. 500" id="budget" className="bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300"/>
+        <label
+          htmlFor="budget"
+          className="cursor-pointer hover:text-sky-400 duration-300"
+        >
+          Budget (in USD)
+        </label>
+        <input
+          value={budget}
+          onChange={(e) => setBudget(e.target.value)}
+          type="number"
+          placeholder="e.g. 500"
+          id="budget"
+          className={`bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300 ${
+            emptyFields.includes("budget")
+              ? "border-rose-500"
+              : "border-slate-500"
+          }`}
+        />
       </div>
       <div className="form-control flex flex-col gap-2">
-        <label htmlFor="duration" className="cursor-pointer hover:text-sky-400 duration-300">Duration (in Week)</label>
-        <input value={duration} onChange={(e) => setDuration(e.target.value)} type="number" placeholder="e.g. e-commerce website" id="duration" className="bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300"/>
+        <label
+          htmlFor="duration"
+          className="cursor-pointer hover:text-sky-400 duration-300"
+        >
+          Duration (in Week)
+        </label>
+        <input
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          type="number"
+          placeholder="e.g. e-commerce website"
+          id="duration"
+          className={`bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300 ${
+            emptyFields.includes("duration")
+              ? "border-rose-500"
+              : "border-slate-500"
+          }`}
+        />
       </div>
       <div className="form-control flex flex-col gap-2">
-        <label htmlFor="manager" className="cursor-pointer hover:text-sky-400 duration-300">Manager</label>
-        <input value={manager} onChange={(e) => setManager(e.target.value)} type="text" placeholder="e.g. Natasha" id="manager" className="bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300"/>
+        <label
+          htmlFor="manager"
+          className="cursor-pointer hover:text-sky-400 duration-300"
+        >
+          Manager
+        </label>
+        <input
+          value={manager}
+          onChange={(e) => setManager(e.target.value)}
+          type="text"
+          placeholder="e.g. Natasha"
+          id="manager"
+          className={`bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300 ${
+            emptyFields.includes("manager")
+              ? "border-rose-500"
+              : "border-slate-500"
+          }`}
+        />
       </div>
       <div className="form-control flex flex-col gap-2">
-        <label htmlFor="dev" className="cursor-pointer hover:text-sky-400 duration-300">Developers</label>
-        <input value={dev} onChange={(e) => setDev(e.target.value)} type="number" placeholder="e.g. 5" id="dev" className="bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300"/>
+        <label
+          htmlFor="dev"
+          className="cursor-pointer hover:text-sky-400 duration-300"
+        >
+          Developers
+        </label>
+        <input
+          value={dev}
+          onChange={(e) => setDev(e.target.value)}
+          type="number"
+          placeholder="e.g. 5"
+          id="dev"
+          className={`bg-transparent border border-slate-500 py-3 px-5 rounded-lg outline-none focus:border-sky-400 duration-300 ${
+            emptyFields.includes("dev") ? "border-rose-500" : "border-slate-500"
+          }`}
+        />
       </div>
 
-      <button type="submit" className="bg-sky-400 text-slate-900 py-3 rounded-lg hover:bg-sky-50 duration-300">Add Project</button>
-      {error && <p className='bg-rose-500/20 rounded-lg p-5 text-rose-500 border border-rose-500'>{error}</p>}
+      <button
+        type="submit"
+        className="bg-sky-400 text-slate-900 py-3 rounded-lg hover:bg-sky-50 duration-300"
+      >
+        Add Project
+      </button>
+      {error && (
+        <p className="bg-rose-500/20 rounded-lg p-5 text-rose-500 border border-rose-500">
+          {error}
+        </p>
+      )}
     </form>
   );
 };
